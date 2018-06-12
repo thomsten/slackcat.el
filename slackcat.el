@@ -26,7 +26,248 @@
 
 ;;; Code:
 
+(require 's)
 
+(defgroup slackcat nil
+  "Customizable group for slackcat")
+
+(defcustom slackcat-bin "slackcat"
+  "Command to invoke slackcat."
+  :group 'slackcat)
+
+(defcustom slackcat-args ""
+  "Default arguments to pass to slackcat."
+  :group 'slackcat)
+
+(defcustom slackcat-user-list '()
+  "List of available users."
+  :group 'slackcat)
+
+(defcustom slackcat-channel-list '()
+  "List of available channels."
+  :group 'slackcat)
+
+(defvar slackcat--dst-list-hist nil
+  "Variable used as a history lookup for users/channels.")
+
+(defconst slackcat--edit-buffer "*slackcat-edit*"
+  "Name of buffer used to edit slackcat messages.")
+
+(defconst slackcat-file-mappings
+  '(("auto" . "Auto Detect Type")
+    ("text" . "Plain Text")
+    ("ai" . "Illustrator File")
+    ("apk" . "APK")
+    ("applescript" . "AppleScript")
+    ("binary" . "Binary")
+    ("bmp" . "Bitmap")
+    ("boxnote" . "BoxNote")
+    ("c" . "C")
+    ("csharp" . "C#")
+    ("cpp" . "C++")
+    ("css" . "CSS")
+    ("csv" . "CSV")
+    ("clojure" . "Clojure")
+    ("coffeescript" . "CoffeeScript")
+    ("cfm" . "ColdFusion")
+    ("d" . "D")
+    ("dart" . "Dart")
+    ("diff" . "Diff")
+    ("doc" . "Word Document")
+    ("docx" . "Word document")
+    ("dockerfile" . "Docker")
+    ("dotx" . "Word template")
+    ("email" . "Email")
+    ("eps" . "EPS")
+    ("epub" . "EPUB")
+    ("erlang" . "Erlang")
+    ("fla" . "Flash FLA")
+    ("flv" . "Flash video")
+    ("fsharp" . "F#")
+    ("fortran" . "Fortran")
+    ("gdoc" . "GDocs Document")
+    ("gdraw" . "GDocs Drawing")
+    ("gif" . "GIF")
+    ("go" . "Go")
+    ("gpres" . "GDocs Presentation")
+    ("groovy" . "Groovy")
+    ("gsheet" . "GDocs Spreadsheet")
+    ("gzip" . "GZip")
+    ("html" . "HTML")
+    ("handlebars" . "Handlebars")
+    ("haskell" . "Haskell")
+    ("haxe" . "Haxe")
+    ("indd" . "InDesign Document")
+    ("java" . "Java")
+    ("javascript" . "JavaScript/JSON")
+    ("jpg" . "JPEG")
+    ("keynote" . "Keynote Document")
+    ("kotlin" . "Kotlin")
+    ("latex" . "LaTeX/TeX")
+    ("lisp" . "Lisp")
+    ("lua" . "Lua")
+    ("m4a" . "MPEG 4 audio")
+    ("markdown" . "Markdown (raw)")
+    ("matlab" . "MATLAB")
+    ("mhtml" . "MHTML")
+    ("mkv" . "Matroska video")
+    ("mov" . "QuickTime video")
+    ("mp3" . "mp4")
+    ("mp4" . "MPEG 4 video")
+    ("mpg" . "MPEG video")
+    ("mumps" . "MUMPS")
+    ("numbers" . "Numbers Document")
+    ("nzb" . "NZB")
+    ("objc" . "Objective-C")
+    ("ocaml" . "OCaml")
+    ("odg" . "OpenDocument Drawing")
+    ("odi" . "OpenDocument Image")
+    ("odp" . "OpenDocument Presentation")
+    ("odd" . "OpenDocument Spreadsheet")
+    ("odt" . "OpenDocument Text")
+    ("ogg" . "Ogg Vorbis")
+    ("ogv" . "Ogg video")
+    ("pages" . "Pages Document")
+    ("pascal" . "Pascal")
+    ("pdf" . "PDF")
+    ("perl" . "Perl")
+    ("php" . "PHP")
+    ("pig" . "Pig")
+    ("png" . "PNG")
+    ("post" . "Slack Post")
+    ("powershell" . "PowerShell")
+    ("ppt" . "PowerPoint presentation")
+    ("pptx" . "PowerPoint presentation")
+    ("psd" . "Photoshop Document")
+    ("puppet" . "Puppet")
+    ("python" . "Python")
+    ("qtz" . "Quartz Composer Composition")
+    ("r" . "R")
+    ("rtf" . "Rich Text File")
+    ("ruby" . "Ruby")
+    ("rust" . "Rust")
+    ("sql" . "SQL")
+    ("sass" . "Sass")
+    ("scala" . "Scala")
+    ("scheme" . "Scheme")
+    ("sketch" . "Sketch File")
+    ("shell" . "Shell")
+    ("smalltalk" . "Smalltalk")
+    ("svg" . "SVG")
+    ("swf" . "Flash SWF")
+    ("swift" . "Swift")
+    ("tar" . "Tarball")
+    ("tiff" . "TIFF")
+    ("tsv" . "TSV")
+    ("vb" . "VB.NET")
+    ("vbscript" . "VBScript")
+    ("vcard" . "vCard")
+    ("velocity" . "Velocity")
+    ("verilog" . "Verilog")
+    ("wav" . "Waveform audio")
+    ("webm" . "WebM")
+    ("wmv" . "Windows Media Video")
+    ("xls" . "Excel spreadsheet")
+    ("xlsx" . "Excel spreadsheet")
+    ("xlsb" . "Excel Spreadsheet (Binary, Macro Enabled)")
+    ("xlsm" . "Excel Spreadsheet (Macro Enabled)")
+    ("xltx" . "Excel template")
+    ("xml" . "XML")
+    ("yaml" . "YAML")
+    ("zip" . "Zip"))
+  "All file types known to Slack. Available at https://api.slack.com/types/file.")
+
+(defvar slackcat--temp-window-cfg nil
+  "Temporary window configuration variable.")
+
+(defun slackcat--major-mode-p (mode)
+  "Return 't if the string MODE is equal to the current major mode."
+  (string-equal major-mode mode))
+
+(defun slackcat--get-filetype ()
+  "Return the 'file type' argument given the current major mode.
+File types are found at https://api.slack.com/types/file."
+  (cond
+   ((slackcat--major-mode-p "c-mode")
+    "c")
+   ((slackcat--major-mode-p "magit-diff-mode")
+    "diff")
+   ((slackcat--major-mode-p "python-mode")
+    "python")
+   (t "auto")))
+
+(defun slackcat--escape-chars (s)
+  "TODO: Search to string S and escape characters."
+  s)
+
+(defun slackcat--pop-dst ()
+  "Get the destination channel/user from the current buffer."
+  (save-excursion
+    (goto-char (point-min))
+    (let* ((dst-line (buffer-substring (point-min) (point-at-eol)))
+           (matches (s-match "\\(@\\|#\\)\\([a-zA-Z0-9._-]+\\)" dst-line)))
+      (when (and matches (= 3 (length matches)))
+        (cond
+         ((string-equal "#" (second matches))
+          (concat "-c " (third matches)))
+         ((string-equal "@" (second matches))
+          (concat "-u " (third matches))))))))
+
+
+(defun slackcat--kill-and-restore ()
+  "Kill the slackcat buffer and restore window configuration."
+  (when slackcat--temp-window-cfg
+    (set-window-configuration slackcat--temp-window-cfg))
+
+  (when (get-buffer slackcat--edit-buffer)
+    (kill-buffer (get-buffer slackcat--edit-buffer))))
+
+(defun slackcat--send-buffer ()
+  "Sends the content of the current buffer to Slack."
+  (interactive)
+  (let ((temp-buffer (current-buffer))
+        (dst-arg (slackcat--pop-dst)))
+    (if dst-arg
+        (progn
+          (goto-char (point-min))
+          (kill-line)
+          (shell-command-on-region (point-min) (point-max) (format "%s %s -p" slackcat-bin dst-arg))))
+    (slackcat--kill-and-restore)))
+
+(defun slackcat-file (&optional b e)
+  "Upload contents of region (B E) to slack chat."
+  (interactive "r")
+  (let* ((slackcat-args-tmp (concat "-t " (slackcat--get-filetype) " "))
+         (args (read-from-minibuffer "slackcat args: " slackcat-args-tmp)))
+    (shell-command-on-region b e (format "%s %s" slackcat-bin args))))
+
+(defun slackcat--abort ()
+  "Kill the slack buffer and abort the message."
+  (interactive)
+  (message "Slackcat aborted")
+  (slackcat--kill-and-restore))
+
+(defun slackcat (&optional b e)
+  "Sends a message to a slack user/channel.
+Optionally, it will insert the marked region (B E) as verbatim."
+  (interactive "r")
+  (let* ((msg "")
+         (dst-list (append (mapcar (lambda (name) (concat "@" name)) slackcat-user-list)
+                           (mapcar (lambda (chan) (concat "#" chan)) slackcat-channel-list)))
+         (dst (completing-read "User/channel: " dst-list nil t nil slackcat--dst-list-hist)))
+
+    (if (region-active-p)
+        (setq msg (format "```\n%s\n```" (slackcat--escape-chars (buffer-substring b e)))))
+
+    (setq slackcat--temp-window-cfg (current-window-configuration))
+    (with-current-buffer (get-buffer-create slackcat--edit-buffer)
+      (erase-buffer)
+      (gfm-mode)
+      (insert (format "<!-- TO: %s -->\n" dst))
+      (insert msg)
+      (pop-to-buffer (current-buffer))
+      (local-set-key (kbd "C-c C-c") 'slackcat--send-buffer)
+      (local-set-key (kbd "C-c C-k") 'slackcat--abort))))
 
 (provide 'slackcat)
 

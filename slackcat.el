@@ -257,14 +257,14 @@ Optionally, it will insert the marked region (B E) as verbatim."
          (dst (completing-read "User/channel: " dst-list nil t nil slackcat--dst-list-hist)))
 
     (if (region-active-p)
-        (setq msg (format "```\n%s\n```" (slackcat--escape-chars (buffer-substring b e)))))
+        (setq msg (format "```\n%s\n```\n" (slackcat--escape-chars (buffer-substring b e)))))
 
     (setq slackcat--temp-window-cfg (current-window-configuration))
     (with-current-buffer (get-buffer-create slackcat--edit-buffer)
       (erase-buffer)
-      (gfm-mode)
       (insert (format "<!-- TO: %s -->\n" dst))
       (insert msg)
+      (gfm-mode)
       (pop-to-buffer (current-buffer))
       (local-set-key (kbd "C-c C-c") 'slackcat--send-buffer)
       (local-set-key (kbd "C-c C-k") 'slackcat--abort))))

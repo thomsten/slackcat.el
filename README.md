@@ -47,6 +47,5 @@ try it too!
 
 See [COPYING][]. Copyright (c) 2018 Thomas Stenersen.
 
-
 [CONTRIBUTING]: ./CONTRIBUTING.md
 [COPYING]: ./COPYING

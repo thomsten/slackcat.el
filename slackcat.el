@@ -1,4 +1,4 @@
-;;; slackcat.el --- Posts messages to Slack from Emacs
+;;; slackcat.el --- Easily post messages to Slack
 
 ;; Copyright (C) 2018 Thomas Stenersen
 
@@ -22,7 +22,7 @@
 
 ;;; Commentary:
 
-;; Posts messages to Slack from Emacs
+;; Easily post messages to Slack
 
 ;;; Code:
 

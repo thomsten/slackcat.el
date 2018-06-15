@@ -5,6 +5,7 @@
 ;; Author: Thomas Stenersen <stenersen.thomas@gmail.com>
 ;; Version: 0.1
 ;; Keywords: speed, convenience
+;; URL: https://github.com/thomsten/slackcat.el
 
 ;; This file is not part of GNU Emacs.
 

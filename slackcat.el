@@ -259,8 +259,10 @@ Optionally, it will insert the marked region (B E) as verbatim."
   (let* ((msg "")
          (dst-list (append (mapcar (lambda (name) (concat "@" name)) slackcat-user-list)
                            (mapcar (lambda (chan) (concat "#" chan)) slackcat-channel-list)))
-         (dst (completing-read "User/channel: " dst-list nil t nil slackcat--dst-list-hist)))
+         (dst (completing-read "User/channel: " dst-list nil t nil 'slackcat--dst-list-hist)))
 
+    (setq slackcat--dst-list-hist
+          (remove-duplicates slackcat--dst-list-hist :test 'string= :from-end t))
     (if (region-active-p)
         (setq msg (format "```\n%s\n```\n" (slackcat--escape-chars (buffer-substring b e)))))
 

@@ -27,6 +27,7 @@
 ;;; Code:
 
 (require 's)
+(require 'markdown-mode)
 
 (defgroup slackcat nil
   "Customizable group for slackcat")

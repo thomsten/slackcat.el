@@ -213,10 +213,10 @@ File types are found at https://api.slack.com/types/file."
            (matches (s-match slackcat--dst-regexp dst-line)))
       (when (and matches (= 3 (length matches)))
         (cond
-         ((string-equal "#" (second matches))
-          (concat "-c " (third matches)))
-         ((string-equal "@" (second matches))
-          (concat "-u " (third matches))))))))
+         ((string-equal "#" (nth 2 matches))
+          (concat "-c " (nth 3 matches)))
+         ((string-equal "@" (nth 2 matches))
+          (concat "-u " (nth 3 matches))))))))
 
 
 (defun slackcat--kill-and-restore ()

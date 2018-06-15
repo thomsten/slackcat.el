@@ -3,6 +3,8 @@
 (package-file "slackcat.el")
 
 (development
+ (depends-on "s")
+ (depends-on "markdown-mode")
  (depends-on "ert")
  (depends-on "flycheck")
  (depends-on "flycheck-cask")

@@ -28,8 +28,7 @@
 (require 'ert)
 (require 'slackcat)
 
-(ert-deftest slackcat-check-sum ()
-  (should (equal (+ 1 1) 2)))
+;; TODO: No tests :'(
 
 (provide 'slackcat-test)
 

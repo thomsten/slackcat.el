@@ -30,7 +30,8 @@
 (require 'markdown-mode)
 
 (defgroup slackcat nil
-  "Customizable group for slackcat")
+  "Customizable group for slackcat"
+  :group 'applications)
 
 (defcustom slackcat-bin "slackcat"
   "Command to invoke slackcat."

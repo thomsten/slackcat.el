@@ -4,6 +4,7 @@
 
 ;; Author: Thomas Stenersen <stenersen.thomas@gmail.com>
 ;; Version: 0.1
+;; Keywords: speed, convenience
 
 ;; This file is not part of GNU Emacs.
 

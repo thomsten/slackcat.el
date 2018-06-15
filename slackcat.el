@@ -54,6 +54,9 @@
 (defconst slackcat--edit-buffer "*slackcat-edit*"
   "Name of buffer used to edit slackcat messages.")
 
+(defconst slackcat--dst-regexp "\\(@\\|#\\)\\([a-zA-Z0-9._-]+\\)"
+  "Regular expression to match the destination type (#channel or @user) and name.")
+
 (defconst slackcat-file-mappings
   '(("auto" . "Auto Detect Type")
     ("text" . "Plain Text")
@@ -206,7 +209,7 @@ File types are found at https://api.slack.com/types/file."
   (save-excursion
     (goto-char (point-min))
     (let* ((dst-line (buffer-substring (point-min) (point-at-eol)))
-           (matches (s-match "\\(@\\|#\\)\\([a-zA-Z0-9._-]+\\)" dst-line)))
+           (matches (s-match slackcat--dst-regexp dst-line)))
       (when (and matches (= 3 (length matches)))
         (cond
          ((string-equal "#" (second matches))

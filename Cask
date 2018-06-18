@@ -1,3 +1,4 @@
+(source gnu)
 (source melpa)
 
 (package-file "slackcat.el")
@@ -8,6 +9,7 @@
  (depends-on "ert")
  (depends-on "flycheck")
  (depends-on "flycheck-cask")
+ (depends-on "let-alist")
  (depends-on "f")
  (depends-on "ecukes")
  (depends-on "ert-runner")

@@ -1,4 +1,5 @@
 # slackcat.el
+[![Build Status](https://travis-ci.com/thomsten/slackcat.el.svg?branch=master)](https://travis-ci.com/thomsten/slackcat.el)
 
 ## Summary
 

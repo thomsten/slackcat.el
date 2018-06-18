@@ -16,7 +16,7 @@ TESTS        = $(wildcard test/*.el)
 TAR          = $(DIST)/slackcat-$(VERSION).tar
 
 
-.PHONY: all check test unit ecukes lint deps install uninstall reinstall clean-all clean clean-elc
+.PHONY: all check test unit lint deps install uninstall reinstall clean-all clean clean-elc
 all : deps $(TAR)
 
 deps :
@@ -49,13 +49,10 @@ $(DIST) :
 
 check : test lint
 
-test: unit ecukes
+test: unit
 
 unit: $(PKG_DIR)
 	${CASK} exec ert-runner
-
-ecukes: $(PKG_DIR)
-	${CASK} exec ecukes
 
 lint : $(SRCS) clean-elc
 	# Byte compile all and stop on any warning or error

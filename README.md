@@ -4,10 +4,11 @@
 ## Summary
 
 With `slackcat.el` you can easily compose and post messages to slack.
-`slackcat.el` is dependent on the wonderful
-[slackcat command line interface](https://github.com/rlister/slackcat).
 
 ## Installing
+
+Install the `slackcat` command line interface from
+[https://github.com/rlister/slackcat](https://github.com/rlister/slackcat).
 
 You will need Emacs 24+, `make` and [Cask](https://github.com/cask/cask) to
 build the project.

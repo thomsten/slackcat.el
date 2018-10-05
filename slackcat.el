@@ -277,7 +277,6 @@ Optionally, it will insert the marked region (B E) as verbatim."
       (erase-buffer)
       (insert (format "<!-- TO: %s -->\n" dst))
       (insert msg)
-      (markdown-mode)
       (pop-to-buffer (current-buffer))
       (local-set-key (kbd "C-c C-c") 'slackcat--send-buffer)
       (local-set-key (kbd "C-c C-k") 'slackcat--abort))))

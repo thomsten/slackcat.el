@@ -245,8 +245,12 @@ File types are found at https://api.slack.com/types/file."
   "Upload contents of region (B E) to slack chat."
   (interactive "r")
   (let* ((slackcat-args-tmp (concat "-t " (slackcat--get-filetype) " "))
-         (args (read-from-minibuffer "slackcat args: " slackcat-args-tmp)))
-    (shell-command-on-region b e (format "%s %s" slackcat-bin args))))
+         (dst-list slackcat-user-list)
+         (dst (completing-read "User: " 'dst-list nil nil nil)))
+    (shell-command-on-region b e (format "%s -t %s -u %s"
+                                         slackcat-bin
+                                         (slackcat--get-filetype)
+                                         dst))))
 
 (defun slackcat--abort ()
   "Kill the slack buffer and abort the message."

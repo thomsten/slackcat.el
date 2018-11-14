@@ -286,7 +286,7 @@ Optionally, it will insert the marked region (B E) as verbatim."
          (dst (completing-read "User/channel: " 'dst-list 'nil 'nil 'nil 'slackcat--dst-list-hist)))
 
     (setq slackcat--dst-list-hist
-          (cl-remove-duplicates (list 'slackcat--dst-list-hist) :test 'string= :from-end t))
+          (slackcat--remove-duplicates slackcat--dst-list-hist))
 
     (if (region-active-p)
         (setq msg (format "```\n%s\n```\n" (slackcat--escape-chars (buffer-substring b e)))))

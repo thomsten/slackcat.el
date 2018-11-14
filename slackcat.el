@@ -255,12 +255,20 @@ File types are found at https://api.slack.com/types/file."
   "Upload contents of region (B E) to slack chat."
   (interactive "r")
   (let* ((slackcat-args-tmp (concat "-t " (slackcat--get-filetype) " "))
-         (dst-list slackcat-user-list)
-         (dst (completing-read "User: " 'dst-list nil nil nil)))
-    (shell-command-on-region b e (format "%s -t %s -u %s"
-                                         slackcat-bin
-                                         (slackcat--get-filetype)
-                                         dst))))
+         (dst-list (append (mapcar (lambda (name) (concat "@" name)) slackcat-user-list)
+                           (mapcar (lambda (chan) (concat "#" chan)) slackcat-channel-list)))
+         (dst (completing-read "User/channel: " 'dst-list 'nil 'nil 'nil 'slackcat--dst-list-hist)))
+
+    (setq slackcat--dst-list-hist
+          (slackcat--remove-duplicates slackcat--dst-list-hist))
+
+    (shell-command-on-region
+     b e
+     (read-from-minibuffer "Slackcat command: "
+      (format "%s -t %s %s"
+              slackcat-bin
+              (slackcat--get-filetype)
+              (slackcat--dst-to-arg dst))))))
 
 (defun slackcat--abort ()
   "Kill the slack buffer and abort the message."

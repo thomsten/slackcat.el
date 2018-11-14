@@ -204,22 +204,32 @@ File types are found at https://api.slack.com/types/file."
     "python")
    (t "auto")))
 
+(defun slackcat--remove-duplicates (lst)
+  "Remove duplicates from LST."
+  (if (> (length lst) 1)
+      (cl-remove-duplicates lst :test 'string= :from-end t)
+    lst))
+
 (defun slackcat--escape-chars (s)
   "TODO: Search to string S and escape characters."
   s)
+
+(defun slackcat--dst-to-arg (dst)
+  "Return command line argument from DST."
+  (let ((matches (s-match slackcat--dst-regexp dst)))
+    (when (and matches (= 3 (length matches)))
+      (cond
+       ((string-equal "#" (nth 1 matches))
+        (concat "-c " (nth 2 matches)))
+       ((string-equal "@" (nth 1 matches))
+        (concat "-u " (nth 2 matches)))))))
 
 (defun slackcat--pop-dst ()
   "Get the destination channel/user from the current buffer."
   (save-excursion
     (goto-char (point-min))
     (let* ((dst-line (buffer-substring-no-properties (point-min) (point-at-eol)))
-           (matches (s-match slackcat--dst-regexp dst-line)))
-      (when (and matches (= 3 (length matches)))
-        (cond
-         ((string-equal "#" (nth 1 matches))
-          (concat "-c " (nth 2 matches)))
-         ((string-equal "@" (nth 1 matches))
-          (concat "-u " (nth 2 matches))))))))
+           (slackcat--dst-to-arg dst-line)))))
 
 (defun slackcat--kill-and-restore ()
   "Kill the slackcat buffer and restore window configuration."

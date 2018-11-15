@@ -29,6 +29,14 @@
 (require 'slackcat)
 
 ;; TODO: No tests :'(
+(ert-deftest slackcat-remove-duplicates ()
+  (should (equal (slackcat--remove-duplicates '("@bob" "@bob" "#devs")) '("@bob" "#devs"))))
+
+(ert-deftest slackcat-test--dst-to-arg ()
+  (should (equal "-c devs" (slackcat--dst-to-arg "sdfa wqr #devs bb"))))
+
+(ert-deftest slackcat-test--dst-to-arg2 ()
+  (should (equal "-c devs" (slackcat--dst-to-arg "<!-- TO: #devs -->"))))
 
 (provide 'slackcat-test)
 

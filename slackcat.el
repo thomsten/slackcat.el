@@ -217,12 +217,13 @@ File types are found at https://api.slack.com/types/file."
 (defun slackcat--dst-to-arg (dst)
   "Return command line argument from DST."
   (let ((matches (s-match slackcat--dst-regexp dst)))
-    (when (and matches (= 3 (length matches)))
-      (cond
-       ((string-equal "#" (nth 1 matches))
-        (concat "-c " (nth 2 matches)))
-       ((string-equal "@" (nth 1 matches))
-        (concat "-u " (nth 2 matches)))))))
+    (if (and matches (= 3 (length matches)))
+        (cond
+         ((string-equal "#" (nth 1 matches))
+          (concat "-c " (nth 2 matches)))
+         ((string-equal "@" (nth 1 matches))
+          (concat "-u " (nth 2 matches))))
+      nil)))
 
 (defun slackcat--pop-dst ()
   "Get the destination channel/user from the current buffer."

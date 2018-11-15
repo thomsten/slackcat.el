@@ -249,8 +249,11 @@ File types are found at https://api.slack.com/types/file."
         (progn
           (goto-char (point-min))
           (kill-line)
-          (shell-command-on-region (point-min) (point-max) (format "%s %s -p" slackcat-bin dst-arg))))
-    (slackcat--kill-and-restore)))
+          (if (= 0 (shell-command-on-region
+                    (point-min) (point-max)
+                    (format "%s %s -p" slackcat-bin dst-arg)))
+              (slackcat--kill-and-restore)))
+      (error "Could not parse destination"))))
 
 (defun slackcat-file (&optional b e)
   "Upload contents of region (B E) to slack chat."

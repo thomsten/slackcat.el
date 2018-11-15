@@ -229,8 +229,8 @@ File types are found at https://api.slack.com/types/file."
   "Get the destination channel/user from the current buffer."
   (save-excursion
     (goto-char (point-min))
-    (let* ((dst-line (buffer-substring-no-properties (point-min) (point-at-eol)))
-           (slackcat--dst-to-arg dst-line)))))
+    (let ((dst-line (buffer-substring-no-properties (point-min) (point-at-eol))))
+      (slackcat--dst-to-arg dst-line))))
 
 (defun slackcat--kill-and-restore ()
   "Kill the slackcat buffer and restore window configuration."

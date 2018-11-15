@@ -183,7 +183,7 @@
     ("xml" . "XML")
     ("yaml" . "YAML")
     ("zip" . "Zip"))
-  "All file types known to Slack. Available at https://api.slack.com/types/file.")
+  "All file types known to Slack.  Available at https://api.slack.com/types/file.")
 
 (defvar slackcat--temp-window-cfg nil
   "Temporary window configuration variable.")
